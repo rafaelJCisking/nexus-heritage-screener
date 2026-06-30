@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preselección - Nexus Heritage</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f0eb; color: #1a1a2e; line-height: 1.6; }
+  .container { max-width: 640px; margin: 40px auto; padding: 0 20px; }
+  .card { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+  h1 { font-size: 24px; margin-bottom: 8px; color: #2d1b69; }
+  .subtitle { color: #666; font-size: 14px; margin-bottom: 32px; }
+  .question { margin-bottom: 28px; }
+  .question label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 15px; }
+  .question .hint { font-size: 13px; color: #888; margin-bottom: 8px; }
+  .opts { display: flex; flex-direction: column; gap: 8px; }
+  .opts label { font-weight: 400; display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid #e0d8d0; border-radius: 10px; cursor: pointer; transition: all 0.15s; }
+  .opts label:hover { border-color: #2d1b69; background: #f8f5ff; }
+  .opts input[type="radio"], .opts input[type="checkbox"] { accent-color: #2d1b69; }
+  input[type="text"], input[type="email"], select { width: 100%; padding: 12px 14px; border: 1px solid #e0d8d0; border-radius: 10px; font-size: 15px; }
+  input:focus { outline: none; border-color: #2d1b69; box-shadow: 0 0 0 3px rgba(45,27,105,0.1); }
+  button { width: 100%; padding: 14px; background: #2d1b69; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.15s; margin-top: 8px; }
+  button:hover { background: #1f1250; }
+  .hidden { display: none; }
+  #gracias { text-align: center; padding: 40px 20px; }
+  #gracias h2 { color: #2d1b69; margin-bottom: 12px; }
+  .checkbox-group { display: flex; flex-direction: column; gap: 6px; }
+  .checkbox-group label { font-weight: 400; display: flex; align-items: center; gap: 10px; padding: 8px 14px; border: 1px solid #e0d8d0; border-radius: 8px; cursor: pointer; }
+  .checkbox-group label:hover { border-color: #2d1b69; background: #f8f5ff; }
+  .error { color: #d32f2f; font-size: 13px; margin-top: 4px; }
+  .terminate { background: #fff3e0; border: 1px solid #ffcc02; border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #e65100; margin-top: 6px; }
+  .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; margin-right: 8px; vertical-align: middle; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="card" id="form-card">
+    <h1>Cuestionario de Preselección</h1>
+    <p class="subtitle">Nexus Heritage — 7 preguntas, menos de 3 minutos. Tus respuestas son confidenciales.</p>
+
+    <div id="form-error" class="hidden" style="background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:12px;margin-bottom:20px;font-size:14px;color:#b91c1c;">
+      Error al enviar el formulario. Por favor intenta de nuevo o escribe a contacto@nexusheritage.cl
+    </div>
+
+    <form id="screener" onsubmit="return handleSubmit(event)">
+
+      <div class="question">
+        <label>1. Edad</label>
+        <div class="opts">
+          <label><input type="radio" name="q1" value="menor" onchange="checkTerminate()"> Menor de 18</label>
+          <label><input type="radio" name="q1" value="18-30" onchange="checkTerminate()"> 18-30</label>
+          <label><input type="radio" name="q1" value="31-50" onchange="checkTerminate()"> 31-50</label>
+          <label><input type="radio" name="q1" value="51-70" onchange="checkTerminate()"> 51-70</label>
+          <label><input type="radio" name="q1" value="71+" onchange="checkTerminate()"> 71+</label>
+        </div>
+        <div class="terminate hidden" id="term-q1">Gracias por tu interés. Este estudio es para mayores de 18 años.</div>
+      </div>
+
+      <div class="question">
+        <label>2. ¿Qué tan interesado estás en la historia de tu familia?</label>
+        <div class="opts">
+          <label><input type="radio" name="q2" value="nada" onchange="checkTerminate()"> Nada interesado</label>
+          <label><input type="radio" name="q2" value="un-poco" onchange="checkTerminate()"> Un poco interesado</label>
+          <label><input type="radio" name="q2" value="moderado" onchange="checkTerminate()"> Moderadamente interesado</label>
+          <label><input type="radio" name="q2" value="mucho" onchange="checkTerminate()"> Muy interesado</label>
+          <label><input type="radio" name="q2" value="extremadamente" onchange="checkTerminate()"> Extremadamente interesado (es un tema central en mi vida)</label>
+        </div>
+        <div class="terminate hidden" id="term-q2">Gracias por tu tiempo. Buscamos personas con interés en historia familiar.</div>
+      </div>
+
+      <div class="question">
+        <label>3. ¿Has usado alguna herramienta digital para investigar tu historia familiar? (selecciona todas las que apliquen)</label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="q3" value="familysearch"> FamilySearch</label>
+          <label><input type="checkbox" name="q3" value="ancestry"> Ancestry</label>
+          <label><input type="checkbox" name="q3" value="myheritage"> MyHeritage</label>
+          <label><input type="checkbox" name="q3" value="familysearch-center"> FamilySearch Center presencial</label>
+          <label><input type="checkbox" name="q3" value="otra"> Otra: <input type="text" id="q3-otra" placeholder="¿Cuál?" style="width:auto;display:inline-block;margin-left:6px;padding:6px 10px;font-size:14px;" onclick="event.stopPropagation()"></label>
+          <label><input type="checkbox" name="q3" value="ninguna"> Ninguna, nunca he usado herramientas digitales para esto</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <label>4. ¿Eres miembro de La Iglesia de Jesucristo de los Santos de los Últimos Días (SUD / Mormona)?</label>
+        <div class="opts">
+          <label><input type="radio" name="q4" value="si-activo"> Sí, activo</label>
+          <label><input type="radio" name="q4" value="si-inactivo"> Sí, pero no activo actualmente</label>
+          <label><input type="radio" name="q4" value="no-familiar"> No, pero tengo familiares que lo son</label>
+          <label><input type="radio" name="q4" value="no"> No</label>
+          <label><input type="radio" name="q4" value="prefiero-no"> Prefiero no responder</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <label>5. ¿Qué tipo de recuerdos familiares conservas actualmente? (selecciona todas las que apliquen)</label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="q5" value="fotos-impresas"> Fotos impresas</label>
+          <label><input type="checkbox" name="q5" value="fotos-digitales"> Fotos digitales</label>
+          <label><input type="checkbox" name="q5" value="videos"> Videos familiares</label>
+          <label><input type="checkbox" name="q5" value="cartas"> Cartas o documentos escritos</label>
+          <label><input type="checkbox" name="q5" value="arbol"> Árbol genealógico</label>
+          <label><input type="checkbox" name="q5" value="objetos"> Objetos heredados (joyas, muebles, etc.)</label>
+          <label><input type="checkbox" name="q5" value="ninguno"> Ninguno en particular</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <label>6. ¿Estarías disponible para una entrevista por video de 35-45 minutos en los próximos 10 días?</label>
+        <div class="opts">
+          <label><input type="radio" name="q6" value="si" onchange="checkTerminate()"> Sí, tengo disponibilidad</label>
+          <label><input type="radio" name="q6" value="depende" onchange="checkTerminate()"> Depende del horario</label>
+          <label><input type="radio" name="q6" value="no" onchange="checkTerminate()"> No, no me interesa participar</label>
+        </div>
+        <div class="terminate hidden" id="term-q6">Entendemos completamente. ¡Gracias por tu tiempo!</div>
+      </div>
+
+      <div class="question" id="q7-block">
+        <label>7. Datos de contacto (solo para agendar)</label>
+        <p class="hint">Tus datos se eliminarán una vez confirmada la entrevista.</p>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <input type="text" name="nombre" placeholder="Nombre" required>
+          <input type="text" name="contacto" placeholder="Email o WhatsApp" required>
+          <select name="disponibilidad">
+            <option value="">Disponibilidad horaria</option>
+            <option value="manana">Mañana</option>
+            <option value="tarde">Tarde</option>
+            <option value="noche">Noche</option>
+            <option value="flexible">Flexible</option>
+          </select>
+          <select name="plataforma">
+            <option value="">Plataforma preferida</option>
+            <option value="zoom">Zoom</option>
+            <option value="meet">Google Meet</option>
+            <option value="whatsapp">WhatsApp Video</option>
+            <option value="presencial">Presencial (Santiago)</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit" id="submit-btn">Enviar respuestas</button>
+    </form>
+  </div>
+
+  <div class="card hidden" id="gracias">
+    <h2>¡Gracias por participar!</h2>
+    <p>Te contactaremos pronto si tu perfil se ajusta a lo que buscamos.</p>
+    <p style="margin-top:16px;font-size:13px;color:#888;">Mientras tanto, si tienes dudas, escríbenos a contacto@nexusheritage.cl</p>
+  </div>
+</div>
+
+<script>
+(function() {
+  function q(s) { return document.querySelector(s); }
+  function qa(s) { return document.querySelectorAll(s); }
+  function byId(id) { return document.getElementById(id); }
+
+  function checkTerminate() {
+    var q1 = q('input[name="q1"]:checked');
+    var q2 = q('input[name="q2"]:checked');
+    var q6 = q('input[name="q6"]:checked');
+
+    byId('term-q1').classList.toggle('hidden', !q1 || q1.value !== 'menor');
+    byId('term-q2').classList.toggle('hidden', !q2 || q2.value !== 'nada');
+    byId('term-q6').classList.toggle('hidden', !q6 || q6.value !== 'no');
+
+    var terminated = (q1 && q1.value === 'menor') || (q2 && q2.value === 'nada') || (q6 && q6.value === 'no');
+    byId('q7-block').style.display = terminated ? 'none' : 'block';
+  }
+
+  function classifySegment(q3, q4) {
+    var tools = q3 || [];
+    var hasGenealogyTool = tools.some(function(t) {
+      return ['familysearch','ancestry','myheritage','familysearch-center','otra'].indexOf(t) !== -1 && t !== 'ninguna';
+    });
+    var isLDS = q4 === 'si-activo' || q4 === 'si-inactivo';
+    var noTools = tools.indexOf('ninguna') !== -1;
+
+    if (hasGenealogyTool) return 'S1: Entusiastas genealogía';
+    if (isLDS) return 'S2: Miembros LDS';
+    if (noTools) return 'S3: Sin experiencia previa';
+    return 'S3: Sin experiencia previa';
+  }
+
+  function getSubmissionData() {
+    var q3Values = []; qa('input[name="q3"]:checked').forEach(function(c) { q3Values.push(c.value); });
+    var q5Values = []; qa('input[name="q5"]:checked').forEach(function(c) { q5Values.push(c.value); });
+    var q4Val = q('input[name="q4"]:checked');
+
+    return {
+      q1: q('input[name="q1"]:checked') ? q('input[name="q1"]:checked').value : '',
+      q2: q('input[name="q2"]:checked') ? q('input[name="q2"]:checked').value : '',
+      q3: q3Values,
+      q3_otra: byId('q3-otra') ? byId('q3-otra').value : '',
+      q4: q4Val ? q4Val.value : '',
+      q5: q5Values,
+      q6: q('input[name="q6"]:checked') ? q('input[name="q6"]:checked').value : '',
+      nombre: q('input[name="nombre"]') ? q('input[name="nombre"]').value : '',
+      contacto: q('input[name="contacto"]') ? q('input[name="contacto"]').value : '',
+      disponibilidad: q('select[name="disponibilidad"]') ? q('select[name="disponibilidad"]').value : '',
+      plataforma: q('select[name="plataforma"]') ? q('select[name="plataforma"]').value : '',
+      segmento: classifySegment(q3Values, q4Val ? q4Val.value : ''),
+      submittedAt: new Date().toISOString()
+    };
+  }
+
+  function saveToLocalStorage(data) {
+    var existing = [];
+    try {
+      var stored = localStorage.getItem('nexus_screener_submissions');
+      if (stored) existing = JSON.parse(stored);
+    } catch(e) {}
+    existing.push(data);
+    localStorage.setItem('nexus_screener_submissions', JSON.stringify(existing));
+  }
+
+  function trySubmitToAPI(data) {
+    return fetch('/api/screener', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    }).then(function(r) {
+      if (!r.ok) throw new Error('API error');
+      return r;
+    });
+  }
+
+  window.checkTerminate = checkTerminate;
+
+  window.handleSubmit = function(e) {
+    e.preventDefault();
+
+    byId('form-error').classList.add('hidden');
+
+    var term1 = q('input[name="q1"]:checked');
+    var term2 = q('input[name="q2"]:checked');
+    var term3 = q('input[name="q6"]:checked');
+
+    if ((term1 && term1.value === 'menor') || (term2 && term2.value === 'nada') || (term3 && term3.value === 'no')) {
+      byId('form-card').classList.add('hidden');
+      byId('gracias').classList.remove('hidden');
+      return false;
+    }
+
+    var btn = byId('submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Enviando...';
+
+    var data = getSubmissionData();
+
+    saveToLocalStorage(data);
+
+    trySubmitToAPI(data)
+      .then(function() {
+        byId('form-card').classList.add('hidden');
+        byId('gracias').classList.remove('hidden');
+      })
+      .catch(function() {
+        byId('form-card').classList.add('hidden');
+        byId('gracias').classList.remove('hidden');
+      });
+
+    return false;
+  };
+})();
+</script>
+</body>
+</html>
